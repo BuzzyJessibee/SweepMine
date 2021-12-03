@@ -1,7 +1,7 @@
 local sweepframe = CreateFrame("Frame", "SweepMineFrame", UIParent, "BasicFrameTemplate")
 local sweepreset = CreateFrame("Button", "SweepResetButton", sweepframe, "UIPanelButtonTemplate")
 
-print("[|cFF9370DBSweepMine|r] Welcome to SweepMine - use /sweepmine to open the frame if you close it!")
+print("[|cFF9370DBSweepMine|r] Welcome to SweepMine - use /sweepmine to open the frame!")
 
 -- Globals
 SweepBoard = {}
@@ -324,6 +324,7 @@ function SlashCmdList.VER(msg, editBox)
 	end
 end
 
+sweepframe:Hide()
 
 
 
