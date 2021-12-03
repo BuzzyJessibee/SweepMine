@@ -1,0 +1,7 @@
+## Interface: 90105
+## Title: SweepMine
+## Author: Lyrasaurus Rose
+## Version: 1.0.0
+## Notes: Minesweeper for World of Warcraft
+
+SweepMine.lua
