@@ -153,14 +153,13 @@ local function revealSpace(x, y, frame)
 	-- How many bombs are adjacent to the current square
 	local adjBombs = 0
 
-	-- Prevents a flaw in the program logic that would break the game if the user left clicked
-	-- on a flagged spot. This just calls flagSpace instead to prevent that.
-	if SweepBoard[x][y] == 2 then
-		flagSpace(x, y, frame)
+	-- Prevents players from left clicking on any flagged spaces.
+	if SweepBoard[x][y] == 3 or SweepBoard[x][y] == 2 then
+		return
 	end
 
 	-- If player clicks on a bomb, it's game over
-	if SweepBoard[x][y] == 1 or SweepBoard[x][y] == 3 then
+	if SweepBoard[x][y] == 1 then
 		frame:SetText("B")
 
 		-- Show where the bombs were and disable the board
@@ -242,7 +241,9 @@ local function MakeButtons(buttonX, buttonY)
 
 		-- Depending on what button the user clicks we do other stuff
 		if button == "RightButton" then
-			flagSpace(framex, framey, self)
+			if SweepMineGameInProgress == true then
+				flagSpace(framex, framey, self)
+			end
 		elseif button == "LeftButton" then
 			if SweepMineGameInProgress == false then
 				SweepBetterStart(framex, framey, self)
