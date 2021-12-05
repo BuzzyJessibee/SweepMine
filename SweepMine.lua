@@ -7,8 +7,10 @@ print("[|cFF9370DBSweepMine|r] Welcome to SweepMine - use /sweepmine to open the
 SweepBoard = {}
 SweepBombs = {}
 TotalSweepBombs = 0
-FlaggedBombs = 0
 MissplacedBombs = 0
+SweepRevealedSpaces = 0
+SweepMineGameInProgress = false
+InvalidBombSpaces = {}
 
 -- Make a title for the window
 sweepframe.TitleText:SetText("SweepMine")
@@ -43,15 +45,20 @@ local function bombGenerator(bombsToPlace)
 			local x = math.random(8)
 			local y = math.random(8)
 
-			-- If this isn't already a bomb location
-			if SweepBombs[x..","..y] == nil then
-				SweepBombs[x..","..y] = true
-				SweepBoard[x][y] = 1
-				TotalSweepBombs = TotalSweepBombs + 1
+			if InvalidBombSpaces[x..","..y] == nil then
+				-- If this isn't already a bomb location
+				if SweepBombs[x..","..y] == nil then
+					SweepBombs[x..","..y] = true
+					SweepBoard[x][y] = 1
+					TotalSweepBombs = TotalSweepBombs + 1
+				else
+					-- If a bomb location is already occupied, add one to the counter
+					-- so that it will be re-placed
+					-- print("[|cFF9370DBSweepMine|r] Conflict Found, will re-place bomb...")
+					MissplacedBombs = MissplacedBombs + 1
+				end
 			else
-				-- If a bomb location is already occupied, add one to the counter
-				-- so that it will be re-placed
-				-- print("[|cFF9370DBSweepMine|r] Conflict Found, will re-place bomb...")
+				-- This spot is invalid due to first click rules
 				MissplacedBombs = MissplacedBombs + 1
 			end
 		end
@@ -64,14 +71,17 @@ local function bombGenerator(bombsToPlace)
 			local x = math.random(8)
 			local y = math.random(8)
 
-			-- If this isn't already a bomb location then we successfully placed the bomb
-			if SweepBombs[x..","..y] == nil then
-				SweepBombs[x..","..y] = true
-				SweepBoard[x][y] = 1
-				TotalSweepBombs = TotalSweepBombs + 1
 
-				-- The only difference is we remove missplaced bombs as we fix them
-				MissplacedBombs = MissplacedBombs - 1
+			if InvalidBombSpaces[x..","..y] == nil then
+				-- If this isn't already a bomb location then we successfully placed the bomb
+				if SweepBombs[x..","..y] == nil then
+					SweepBombs[x..","..y] = true
+					SweepBoard[x][y] = 1
+					TotalSweepBombs = TotalSweepBombs + 1
+
+					-- The only difference is we remove missplaced bombs as we fix them
+					MissplacedBombs = MissplacedBombs - 1
+				end
 			end
 		end
 	end
@@ -106,14 +116,17 @@ end
 
 -- Check if a user has won. A user wins if they flag all the bombs.
 local function verifyWin()
-	if FlaggedBombs == TotalSweepBombs then 
-		-- Disable the board
+	if SweepRevealedSpaces == 64 - TotalSweepBombs then
 		for x = 1, 8 do
 			for y = 1, 8 do
 				local framename = "x"..x.."y"..y
-				_G[framename]:Disable()
+				-- If Bomb or Flagged Bomb
+				if SweepBoard[x][y] == 1 or SweepBoard[x][y] == 3 then
+					_G[framename]:SetText("B")
+					_G[framename]:Disable()
+				end
 			end
-		end	
+		end
 		message('You Win! Press the reset button or to play again!')
 	end
 end
@@ -126,16 +139,13 @@ local function flagSpace(x, y, frame)
 	elseif SweepBoard[x][y] == 1 then
 		frame:SetText("F")
 		SweepBoard[x][y] = 3
-		FlaggedBombs = FlaggedBombs + 1
 	elseif SweepBoard[x][y] == 2 then
 		frame:SetText("")
 		SweepBoard[x][y] = 0
 	elseif SweepBoard[x][y] == 3 then
 		frame:SetText("")
 		SweepBoard[x][y] = 1
-		FlaggedBombs = FlaggedBombs - 1
 	end
-	verifyWin()
 end
 
 -- Reveals a space when clicked, also displays the numBombs close to the clicked square
@@ -181,67 +191,24 @@ local function revealSpace(x, y, frame)
 	-- FLAG_EMPTY = 2
 	-- FLAG_MINE = 3
 
-	-- Cardinal Directions
-	if (x+1) ~= 9 then
-		if SweepBoard[x+1][y] == 1 or SweepBoard[x+1][y] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-	if (x-1) ~= 0 then
-		if SweepBoard[x-1][y] == 1 or SweepBoard[x-1][y] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-	if (y+1) ~= 9 then
-		if SweepBoard[x][y+1] == 1 or SweepBoard[x][y+1] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-	if (y-1) ~= 0 then
-		if SweepBoard[x][y-1] == 1 or SweepBoard[x][y-1] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-
-	-- Diagonals
-	-- ooX
-	-- o*o
-	-- ooo
-	if (x+1) ~= 9 and (y-1) ~= 0 then
-		if SweepBoard[x+1][y-1] == 1 or SweepBoard[x+1][y-1] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-
-	-- Xoo
-	-- o*o
-	-- ooo
-	if (x-1) ~= 0 and (y-1) ~= 0 then
-		if SweepBoard[x-1][y-1] == 1 or SweepBoard[x-1][y-1] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-
-	-- ooo
-	-- o*o
-	-- ooX
-	if (x+1) ~= 9 and (y+1) ~= 9 then
-		if SweepBoard[x+1][y+1] == 1 or SweepBoard[x+1][y+1] == 3 then
-			adjBombs = adjBombs + 1
-		end
-	end
-
-	-- ooo
-	-- o*o
-	-- Xoo
-	if (x-1) ~= 0 and (y+1) ~= 9 then
-		if SweepBoard[x-1][y+1] == 1 or SweepBoard[x-1][y+1] == 3 then
-			adjBombs = adjBombs + 1
+	-- Is there a bomb around us?
+	for xcoord = x-1, x+1 do
+		for ycoord = y-1, y+1 do
+			-- Make sure we're not trying to access out of bounds
+			if xcoord ~= 0 and xcoord ~= 9 then
+				if ycoord ~= 0 and ycoord ~= 9 then
+					if SweepBoard[xcoord][ycoord] == 1 or SweepBoard[xcoord][ycoord] == 3 then
+						adjBombs = adjBombs + 1
+					end
+				end
+			end
 		end
 	end
 
 	frame:SetText(tostring(adjBombs))
 	frame:Disable()
+	SweepRevealedSpaces = SweepRevealedSpaces + 1
+	verifyWin()
 
 end
 
@@ -277,7 +244,11 @@ local function MakeButtons(buttonX, buttonY)
 		if button == "RightButton" then
 			flagSpace(framex, framey, self)
 		elseif button == "LeftButton" then
-			revealSpace(framex, framey, self)
+			if SweepMineGameInProgress == false then
+				SweepBetterStart(framex, framey, self)
+			else
+				revealSpace(framex, framey, self)
+			end
 		end
 	end)
 end
@@ -289,9 +260,6 @@ for x = 1, 8 do
 		MakeButtons(buttonX, buttonY);
 	end
 end
-
--- Generate the board for the first time
-generateBoard()
 
 -- If the reset button is pressed, reset the game entirely
 -- It has to be at the bottom because Lua doesn't have function hoisting
@@ -305,14 +273,38 @@ sweepreset:SetScript("OnClick", function(self, button, down)
 		end
 	end	
 
-	-- Make a new Gameboard
+	-- Make a new GameState
 	TotalSweepBombs = 0
-	FlaggedBombs = 0
 	MissplacedBombs = 0
-	generateBoard()
+	SweepRevealedSpaces = 0
+	SweepMineGameInProgress = false
+	InvalidBombSpaces = {}
 
 	print("[|cFF9370DBSweepMine|r] SweepMine has been reset!")
 end)
+
+function SweepBetterStart(x, y, frame)
+	-- Take all the squares around the clicked square and make them invalid
+	for xcoord = x-1, x+1 do
+		for ycoord = y-1, y+1 do
+			-- Make sure we're not trying to access out of bounds
+			if xcoord ~= 0 and xcoord ~= 9 then
+				if ycoord ~= 0 and ycoord ~= 9 then
+					InvalidBombSpaces[xcoord..","..ycoord] = true
+				end
+			end
+		end
+	end
+
+	generateBoard()
+
+
+	frame:SetText("0")
+	frame:Disable()
+	SweepRevealedSpaces = SweepRevealedSpaces + 1
+	
+	SweepMineGameInProgress = true
+end
 
 --Make a Slash Command so that we can open the frame again if we close it
 SLASH_VER1 = '/sweepmine'
@@ -324,6 +316,7 @@ function SlashCmdList.VER(msg, editBox)
 	end
 end
 
+-- Hide the frame on /reload and on WoW start-up
 sweepframe:Hide()
 
 
