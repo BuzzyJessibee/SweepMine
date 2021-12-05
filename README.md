@@ -13,7 +13,7 @@ Each square has a number in it (unless it's a bomb). This number corresponds to 
 
 In order to help you, you can right-click on any square to mark it as a possible bomb (THIS IS NOT NECESSARY TO WIN!). Right-click on the flagged space again to un-flag it.
 
-The first click is guranteed to be a 0, so don't worry about guessing right on your first turn. Just decide where you feel luckiest from starting and go from there!
+The first click is guranteed to be a 0, so don't worry about guessing right on your first turn. Just decide where you feel luckiest starting from and go from there!
 
 If you click on a bomb, it's game over! Just click the reset button to generate a new random board and try again!
 
