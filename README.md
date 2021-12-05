@@ -5,7 +5,9 @@ Minesweeper in World of Warcraft
 Simply grab the Source Code (.zip) from the releases and install like any other addon by dropping the extracted folder (`SweepMine`) in `\World of Warcraft\_retail_\Interface\AddOns`
 
 ## How to Play
-SweepMine will appear on your screen (it's draggable!). The grid is 8x8 and there are 10 bombs. The goal of the game is to reveal the whole board without hitting a bomb!
+To open SweepMine, simply do `/sweepmine` in chat and the game window will appear (it's draggable!). 
+
+The grid is 8x8 and there are 10 bombs. The goal of the game is to reveal the whole board without hitting a bomb!
 
 Each square has a number in it (unless it's a bomb). This number corresponds to the number of bombs that are adjacent to the square in any direction including diagonally.
 
@@ -30,6 +32,5 @@ I used Visual Studio Code with the Lua language extension.
 ## Future Work
 * Make it so that the board can be bigger than 8x8 / have higher difficulties
 * Make the frame hide in combat automatically, so that the user doesn't have to close it themselves
-* Make it so that the frame visibility persists on a /reload so that it won't keep popping up again if you've closed it.
 * Other Ideas? Let me know in the Issues Tab!
 
