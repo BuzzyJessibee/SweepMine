@@ -5,9 +5,12 @@ Minesweeper in World of Warcraft
 Simply grab the Source Code (.zip) from the releases and install like any other addon by dropping the extracted folder (`SweepMine`) in `\World of Warcraft\_retail_\Interface\AddOns`
 
 ## How to Play
-SweepMine will appear on your screen (it's draggable!). The grid is 8x8 and there are 10 bombs. The goal of the game is to figure out where all the bombs are by revealing squares with left-click, and flagging bombs by using right-click.
-
+SweepMine will appear on your screen (it's draggable!). The grid is 8x8 and there are 10 bombs. The goal of the game is to reveal the whole board without hitting a bomb!
 Each square has a number in it (unless it's a bomb). This number corresponds to the number of bombs that are adjacent to the square in any direction including diagonally.
+
+In order to help you, you can right-click on any square to mark it as a possible bomb (THIS IS NOT NECESSARY TO WIN!). Right-click on the flagged space again to un-flag it.
+
+The first click is guranteed to be a 0, so don't worry about guessing right on your first turn. Just decide where you feel luckiest from starting and go from there!
 
 If you click on a bomb, it's game over! Just click the reset button to generate a new random board and try again!
 
