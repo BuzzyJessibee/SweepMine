@@ -17,8 +17,6 @@ The first click is guranteed to be a 0, so don't worry about guessing right on y
 
 If you click on a bomb, it's game over! Just click the reset button to generate a new random board and try again!
 
-[Demo Video]() Coming Soon!
-
 ## Issues 
 If you find any bugs, please let me know with the issues tab. I tried my best to make sure that I caught most of the major bugs, but if you find an unwinnable board or a bug, please let me know by filling out a ticket.
 
